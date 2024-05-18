@@ -45,7 +45,7 @@ class ScrapeWebsiteTool(BaseTool):
 	) -> Any:
 		website_url = kwargs.get('website_url', self.website_url)
 		page = requests.get(
-			website_url,
+			website_url.replace('"', ''),
 			timeout=15,
 			headers=self.headers,
 			cookies=self.cookies if self.cookies else {}
