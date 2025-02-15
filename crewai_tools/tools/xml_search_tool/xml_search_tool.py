@@ -1,7 +1,7 @@
 from typing import Any, Optional, Type
 
 from embedchain.models.data_type import DataType
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
 
@@ -31,6 +31,7 @@ class XMLSearchTool(RagTool):
     def __init__(self, xml: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if xml is not None:
+            kwargs["data_type"] = DataType.XML
             self.add(xml)
             self.description = f"A tool that can be used to semantic search a query the {xml} XML's content."
             self.args_schema = FixedXMLSearchToolSchema
@@ -41,7 +42,6 @@ class XMLSearchTool(RagTool):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        kwargs["data_type"] = DataType.XML
         super().add(*args, **kwargs)
 
     def _before_run(

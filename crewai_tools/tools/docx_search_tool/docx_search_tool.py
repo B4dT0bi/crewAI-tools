@@ -1,25 +1,31 @@
 from typing import Any, Optional, Type
 
 from embedchain.models.data_type import DataType
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
 
 
 class FixedDOCXSearchToolSchema(BaseModel):
     """Input for DOCXSearchTool."""
-    docx: Optional[str] = Field(..., description="Mandatory docx path you want to search")
+
+    docx: Optional[str] = Field(
+        ..., description="Mandatory docx path you want to search"
+    )
     search_query: str = Field(
         ...,
         description="Mandatory search query you want to use to search the DOCX's content",
     )
 
+
 class DOCXSearchToolSchema(FixedDOCXSearchToolSchema):
     """Input for DOCXSearchTool."""
+
     search_query: str = Field(
         ...,
         description="Mandatory search query you want to use to search the DOCX's content",
     )
+
 
 class DOCXSearchTool(RagTool):
     name: str = "Search a DOCX's content"
@@ -31,6 +37,7 @@ class DOCXSearchTool(RagTool):
     def __init__(self, docx: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if docx is not None:
+            kwargs["data_type"] = DataType.DOCX
             self.add(docx)
             self.description = f"A tool that can be used to semantic search a query the {docx} DOCX's content."
             self.args_schema = FixedDOCXSearchToolSchema
@@ -41,7 +48,6 @@ class DOCXSearchTool(RagTool):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        kwargs["data_type"] = DataType.DOCX
         super().add(*args, **kwargs)
 
     def _before_run(
@@ -56,9 +62,9 @@ class DOCXSearchTool(RagTool):
         self,
         **kwargs: Any,
     ) -> Any:
-        search_query = kwargs.get('search_query')
+        search_query = kwargs.get("search_query")
         if search_query is None:
-            search_query = kwargs.get('query')
+            search_query = kwargs.get("query")
 
         docx = kwargs.get("docx")
         if docx is not None:

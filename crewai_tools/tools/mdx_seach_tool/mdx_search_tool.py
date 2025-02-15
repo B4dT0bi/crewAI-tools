@@ -1,7 +1,7 @@
 from typing import Any, Optional, Type
 
 from embedchain.models.data_type import DataType
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
 
@@ -31,6 +31,7 @@ class MDXSearchTool(RagTool):
     def __init__(self, mdx: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if mdx is not None:
+            kwargs["data_type"] = DataType.MDX
             self.add(mdx)
             self.description = f"A tool that can be used to semantic search a query the {mdx} MDX's content."
             self.args_schema = FixedMDXSearchToolSchema
@@ -41,7 +42,6 @@ class MDXSearchTool(RagTool):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        kwargs["data_type"] = DataType.MDX
         super().add(*args, **kwargs)
 
     def _before_run(
